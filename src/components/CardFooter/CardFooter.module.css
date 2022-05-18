@@ -1,0 +1,10 @@
+.footer {
+    position: inherit;
+    color: white;
+    width: 100%;
+    padding: 16px;
+}
+
+.account {
+    margin: 0;
+}

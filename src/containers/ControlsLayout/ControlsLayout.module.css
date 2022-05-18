@@ -1,0 +1,23 @@
+.layout {
+  position: absolute;
+  bottom: 50px;
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+}
+
+.sidebar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.sidebar-content {
+  display: flex;
+  justify-content: center;
+  width: 80px;
+}
+
+.footer {
+  width: 100%;
+}

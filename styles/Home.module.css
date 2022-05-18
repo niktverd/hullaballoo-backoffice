@@ -1,0 +1,17 @@
+.container {
+    background-color: black;
+    position: relative;
+    min-height: 800px;
+    max-height: 100vh;
+    overflow: scroll;
+    scroll-snap-type: y mandatory;
+}
+
+.container {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.container::-webkit-scrollbar {
+    display: none;
+}
