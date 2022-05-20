@@ -1,0 +1,37 @@
+.menuItem {
+  display: flex;
+  width: 100px;
+  height: 100px;
+  color: black;
+  background-color: rgba(230, 230, 230, 0.95);
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1px;
+  margin-right: 1px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.menuItem:hover {
+  color: white;
+  background-color: rgba(100, 100, 100, 0.95);
+}
+
+.menuItem:last-child {
+  margin-right: 5px;
+}
+
+.menuItemContent {
+  padding: 10px;
+}
+
+.menuItemIcon {
+  display: flex;
+  justify-content: center;
+}
+
+.menuItemTitle {
+  display: flex;
+  justify-content: center;
+}

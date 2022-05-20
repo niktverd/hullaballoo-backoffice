@@ -1,0 +1,9 @@
+.chapter {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: auto;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  padding: 20px 10px 10px 10px;
+}

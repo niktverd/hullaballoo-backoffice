@@ -1,6 +1,6 @@
 .container {
     display: flex;
-    background-color: darkslategray;
+    background-color: lightseagreen;
     position: relative;
     min-height: 800px;
     max-height: 100vh;
