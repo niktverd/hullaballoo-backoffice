@@ -1,6 +1,7 @@
 import type {NextPage} from 'next'
 import {useRouter} from 'next/router';
 import CardForm from '../../src/components/Form/Form';
+import Page from '../../src/containers/Page/Page';
 
 import styles from '../../styles/Content.module.css'
 
@@ -33,11 +34,10 @@ const Home: NextPage = () => {
 
 
     return (
-        <div className={styles.container}>
-            <h1>Add New Video</h1>
+        <Page title="Create a new card">
             <CardForm onSubmit={onSubmit}/>
-        </div>
-    )
+        </Page>
+    );
 }
 
 export default Home;
