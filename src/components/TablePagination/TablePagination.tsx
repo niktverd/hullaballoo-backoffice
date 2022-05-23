@@ -1,4 +1,4 @@
-import {Dispatch, SetStateAction, useEffect, useState} from 'react';
+import {Dispatch, SetStateAction, useEffect} from 'react';
 import {
     IconButton,
     Paper,
@@ -16,16 +16,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {Card} from '../../types/common';
 import TablePaginationActions from '../TablePaginationActions/TablePaginationActions';
-
-// import styles from '../../styles/Content.module.css'
-
-type CardExtended = Required<Card> & {
-    _id: string;
-    name: string;
-};
+import {CardExtended} from '../../../pages/content/list';
 
 type CardListProps = {
-    cards: CardExtended[];
+    cards: Card[];
     setCards: Dispatch<SetStateAction<CardExtended[]>>;
     page: number;
     setPage: Dispatch<SetStateAction<number>>;
@@ -64,7 +58,7 @@ const PaginationTable: NextPage<CardListProps> = ({
 
     }, [page]);
 
-    const rows: CardExtended[] = cards.map((card) => card);
+    const rows: Required<Card>[] = cards.map((card) => card as Required<Card>);
 
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
@@ -94,6 +88,9 @@ const PaginationTable: NextPage<CardListProps> = ({
                                 <div>
                                     {row.description.slice(0, 64)}
                                 </div>
+                                <div>
+                                    {row._id}
+                                </div>
                             </TableCell>
                             <TableCell style={{ width: 160 }}>
                                 <Image src={'https://img.youtube.com/vi/lnRlhD398RE/0.jpg'} width="80px" height="45px" />
@@ -106,10 +103,9 @@ const PaginationTable: NextPage<CardListProps> = ({
                             </TableCell>
                             <TableCell style={{ width: 160 }} align="right">
                                 <Link href={`/content/${row._id}`}>
-                                    <IconButton >
+                                    <IconButton>
                                         <Edit />
                                     </IconButton>
-
                                 </Link>
                             </TableCell>
                         </TableRow>

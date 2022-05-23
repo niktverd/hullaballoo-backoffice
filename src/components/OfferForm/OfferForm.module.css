@@ -1,0 +1,27 @@
+.container {
+    margin: 0px auto;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: aliceblue;
+    max-width: calc(100vh / 16 * 9);
+    height: 100vh;
+
+    scroll-snap-align: start;
+    overflow: hidden;
+}
+
+.row {
+    display: flex;
+    padding-bottom: 30px;
+}
+
+.label {
+    width: 150px;
+}
+
+.field {
+    width: 300px;
+}

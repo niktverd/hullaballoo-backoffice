@@ -1,7 +1,8 @@
-import {collection, getDocs, limit, orderBy, query, startAfter, startAt} from 'firebase/firestore/lite';
-import type {NextApiRequest, NextApiResponse} from 'next'
+import {collection, getDocs, limit, orderBy, query} from 'firebase/firestore/lite';
+import type {NextApiRequest, NextApiResponse} from 'next';
+
 import db from '../../firebase';
-import { Card } from '../../src/types/common';
+import {Card} from '../../src/types/common';
 
 
 
@@ -24,6 +25,10 @@ export default async function handler(
         : query(cardsCol, orderBy('createdAt'));
     const cardSnapshot = await getDocs(q);
 
-    const cards = cardSnapshot.docs.map(doc => doc.data() as Card);
-    return res.status(200).json({cards})
+    const cards = cardSnapshot.docs.map(doc => ({
+        ...doc.data() as Card,
+        _id: doc.id,
+    }));
+
+    return res.status(200).json({cards});
 }

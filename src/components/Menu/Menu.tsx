@@ -35,11 +35,17 @@ const MenuButtons: React.FunctionComponent<MenuButtons> = ({handleClose}) => {
                     <MenuItem title={'Home'} url={'/'} icon={<HomeOutlinedIcon />}/>
                 </MenuChapter>}
                 <MenuChapter title={'Cards'} className={styles.chapterButtons}>
-                    <MenuItem title={'new'} url={'/content/new'} icon={<AddBoxOutlinedIcon />} />
+                    <MenuItem title={'New'} url={'/content/new'} icon={<AddBoxOutlinedIcon />} />
                     <MenuItem title={'List'} url={'/content/list'} icon={<AddBoxOutlinedIcon />} />
                 </MenuChapter>
-                {/* Выключил заявки в меню, пока сохраняем в гугл таблицы */}
-                {/* <MenuItem title={keysetCommon['menu-item_requst-list']} url={'/request-list'} /> */}
+                <MenuChapter title={'Threads'} className={styles.chapterButtons}>
+                    <MenuItem title={'New'} url={'/threads/new'} icon={<AddBoxOutlinedIcon />} />
+                    <MenuItem title={'List'} url={'/threads/list'} icon={<AddBoxOutlinedIcon />} />
+                </MenuChapter>
+                <MenuChapter title={'Offers'} className={styles.chapterButtons}>
+                    <MenuItem title={'New'} url={'/offers/new'} icon={<AddBoxOutlinedIcon />} />
+                    <MenuItem title={'List'} url={'/offers/list'} icon={<AddBoxOutlinedIcon />} />
+                </MenuChapter>
             </div>
         </div>
     );

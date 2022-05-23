@@ -1,14 +1,16 @@
 import type {NextPage} from 'next'
 import { useRouter } from 'next/router';
 import {useEffect, useState} from 'react';
+
 import Card from '../../src/components/Card/Card';
 import CardForm from '../../src/components/Form/Form';
+import Page from '../../src/containers/Page/Page';
 
-import styles from '../../styles/Content.module.css'
+import styles from '../../styles/Content.module.css';
 
 // import _cards from '../src/temp-data/videos.json'
 
-const Home: NextPage = () => {
+const CardEdit: NextPage = () => {
     const [card, setCard] = useState(null);
     const router = useRouter();
 
@@ -31,6 +33,7 @@ const Home: NextPage = () => {
                 })
             });
             const cardJson = await cardResp.json();
+
             if (cardJson.ok) {
                 router.reload();
             }
@@ -55,11 +58,13 @@ const Home: NextPage = () => {
     }, [router]);
 
     return (
-        <div className={styles.container}>
-            {card && <Card content={card} />}
-            {card && <CardForm onSubmit={onSubmit} content={card} docId={router.query.id as string} />}
-        </div>
-    )
+        <Page title="Edit Card">
+            <div className={styles.container}>
+                {card && <Card content={card} />}
+                {card && <CardForm onSubmit={onSubmit} content={card} docId={router.query.id as string} />}
+            </div>
+        </Page>
+    );
 }
 
-export default Home;
+export default CardEdit;

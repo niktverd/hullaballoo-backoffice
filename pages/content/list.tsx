@@ -7,10 +7,10 @@ import TablePagination from '../../src/components/TablePagination/TablePaginatio
 
 import styles from '../../styles/Content.module.css'
 
-type CardExtended = Required<Card> & {
+export type CardExtended = Required<Card> & {
     _id: string;
     name: string;
-}
+};
 
 const CardsList: NextPage = () => {
     const [cards, setCards] = useState<CardExtended[]>([]);
@@ -31,8 +31,6 @@ const CardsList: NextPage = () => {
         getCards();
     }, []);
 
-    console.log(cards);
-
     return (
         <Page title='Cards List'>
             <TablePagination
@@ -44,7 +42,7 @@ const CardsList: NextPage = () => {
                 setRowsPerPage={setRowsPerPage}
             />
         </Page>
-    )
+    );
 }
 
 export default CardsList;
