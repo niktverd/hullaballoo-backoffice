@@ -92,16 +92,19 @@ const PaginationTable: NextPage<CardListProps> = ({
                                     {row._id}
                                 </div>
                             </TableCell>
-                            <TableCell style={{ width: 160 }}>
+                            <TableCell>
                                 <Image src={'https://img.youtube.com/vi/lnRlhD398RE/0.jpg'} width="80px" height="45px" />
                             </TableCell>
-                            <TableCell style={{ width: 160 }} align="right">
+                            <TableCell align="right">
                                 {row.videoUrl.slice(0, 32)}
                             </TableCell>
-                            <TableCell style={{ width: 160 }} align="right">
+                            <TableCell align="right">
                                 {row.likes}
                             </TableCell>
-                            <TableCell style={{ width: 160 }} align="right">
+                            <TableCell align="right">
+                                {row.threads?.join(', ') || ''}
+                            </TableCell>
+                            <TableCell align="right">
                                 <Link href={`/content/${row._id}`}>
                                     <IconButton>
                                         <Edit />
