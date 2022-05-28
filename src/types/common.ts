@@ -10,6 +10,7 @@ export type Card = {
     account?: string;
     description?: string;
     likes?: number;
+    threads?: string[];
 } & Base;
 
 export type Offer = {
@@ -21,5 +22,4 @@ export type Offer = {
 
 export type Thread = {
     _id: string;
-    cards: string[];
 } & Base;

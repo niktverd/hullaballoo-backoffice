@@ -9,8 +9,6 @@ const CreateThread: NextPage = () => {
     const router = useRouter();
 
     async function onSubmit(values: any) {
-        values.cards = values.cards?.map((card: any) => card.cardId) || [];
-
         try {
             const threadResp = await fetch('/api/thread', {
                 method: 'POST',

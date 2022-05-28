@@ -21,6 +21,8 @@ const CardEdit: NextPage = () => {
             return;
         }
 
+        values.threads = values.threads?.map((thread: any) => thread.threadId) || [];
+
         try {
             const cardResp = await fetch('/api/card', {
                 method: 'PATCH',
@@ -47,7 +49,10 @@ const CardEdit: NextPage = () => {
             try {
                 const cardResp = await fetch('/api/card?id='+router.query.id);
                 const cardJson = await cardResp.json();
-                setCard(cardJson.card);
+                setCard({
+                    ...cardJson.card,
+                    threads: cardJson.card?.threads?.map((threadId: string) => ({threadId})) || [],
+                });
             } catch (error) {
                 console.log(error);
             }

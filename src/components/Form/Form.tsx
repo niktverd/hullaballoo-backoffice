@@ -1,6 +1,7 @@
-import {useRouter} from 'next/router';
 import React from 'react'
 import {Field, Form} from 'react-final-form';
+import {FieldArray} from 'react-final-form-arrays';
+import arrayMutators from 'final-form-arrays';
 
 import styles from './Form.module.css';
 
@@ -18,6 +19,10 @@ const CardForm: React.FC<FormProps> = ({onSubmit, content, docId}) => {
             <Form
                 onSubmit={onSubmit}
                 // validate={validate}
+                mutators={{
+                    // potentially other mutators could be merged here
+                    ...arrayMutators
+                }}
                 initialValues={content}
                 render={({ handleSubmit }) => (
                 <form onSubmit={handleSubmit}>
@@ -34,6 +39,33 @@ const CardForm: React.FC<FormProps> = ({onSubmit, content, docId}) => {
                     <div className={styles.row}>
                         <label className={styles.label}>Description</label>
                         <Field className={styles.field} name="description" component="textarea" rows={5}  />
+                    </div>
+
+                    <div className={styles.row}>
+                        <label className={styles.label}>Threads</label>
+                        <FieldArray name="threads">
+                            {({ fields }) => (
+                                <div>
+                                    {fields.map((name, index) => (
+                                        <div key={name}>
+                                        <div>
+                                            <label>Thread ID</label>
+                                            <Field name={`${name}.threadId`} component="input" />
+                                        </div>
+                                        <button type="button" onClick={() => fields.remove(index)}>
+                                            Remove
+                                        </button>
+                                        </div>
+                                    ))}
+                                    <button
+                                        type="button"
+                                        onClick={() => fields.push({cardId: ''})}
+                                    >
+                                        Add
+                                    </button>
+                                </div>
+                            )}
+                        </FieldArray>
                     </div>
 
                     <div className={styles.row}>

@@ -19,8 +19,6 @@ const ThreadEdit: NextPage = () => {
             return;
         }
 
-        values.cards = values.cards?.map((card: any) => card.cardId) || [];
-
         try {
             const threadResp = await fetch('/api/thread', {
                 method: 'PATCH',
@@ -49,10 +47,7 @@ const ThreadEdit: NextPage = () => {
 
                 if (threadJson.thread) {
                     const {_id, cards} = threadJson.thread;
-                    setThread({
-                        _id,
-                        cards: cards.map((cardId: string) => ({cardId})),
-                    });
+                    setThread({_id});
 
                 }
             } catch (error) {

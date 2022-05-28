@@ -47,7 +47,6 @@ const ThreadsList: NextPage = () => {
                         <TableCell component="th" scope="row">
                             {row._id}
                         </TableCell>
-                        <TableCell align="right">{row.cards?.length || 0}</TableCell>
                         <TableCell align="right">
                             <Link href={`/threads/${row._id}`}>
                                 <IconButton>
