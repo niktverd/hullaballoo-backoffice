@@ -39,11 +39,11 @@ async function setDocument(
     console.log(body);
     
     try {
-        const {videoUrl} = body;
+        const {videoUrl, loader} = body;
         const youtubeId = getYouTubeID(videoUrl);
         
         if (!youtubeId) {
-            return res.status(501).json({ok: false, error: 'there is no youtube id'});
+            return res.status(207).json({ok: false, error: 'there is no youtube id'});
         }
 
         const youtube = await new Innertube({ gl: 'US' });
@@ -57,12 +57,14 @@ async function setDocument(
         const newId = docRef.id;
         const metaData = video?.metadata as MetaData;
         await setDoc(docRef, {
+            videoUrl,
             account: metaData?.channel_name ?? '',
             description: video.title + video.description ?? '',
             isFamilySafe: metaData?.is_family_safe ?? true,
             views: metaData?.view_count ?? stableViews,
             category: metaData?.category ?? '',
             keywords: metaData?.keywords ?? [],
+            loader: loader ?? 'unknown',
             _id: newId,
             likes: metaData?.likes?.count ?? stableLikes,
             updatedAt: updatedAt,
@@ -74,10 +76,10 @@ async function setDocument(
         console.log('Error during adding doc');
 
         if (typeof error === 'string') {
-            return res.status(404).json({ok: false, error});
+            return res.status(204).json({ok: false, error});
         }
 
-        return res.status(404).json({ok: false});
+        return res.status(204).json({ok: false});
     }
 }
 
