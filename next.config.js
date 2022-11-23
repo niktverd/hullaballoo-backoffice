@@ -1,8 +1,6 @@
-const withPWA = require('next-pwa')
-
-module.exports = withPWA({
+module.exports = {
   reactStrictMode: true,
   images: {
     domains: ['img.youtube.com', 'newsroom.pinterest.com'],
   },
-});
+}
