@@ -1,9 +1,9 @@
-import {doc, collection, setDoc} from 'firebase/firestore/lite';
-import getYouTubeID from 'get-youtube-id';
-import type { NextApiRequest, NextApiResponse } from 'next'
-import db from '../../firebase';
-
-import Innertube from 'youtubei.js';
+import { doc, collection, setDoc } from "firebase/firestore/lite";
+import getYouTubeID from "get-youtube-id";
+import moment from "moment";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { gt, gte, lt } from "pomeranian-durations";
+import db from "../../firebase";
 
 type Card = {
     videoUrl: string;
@@ -17,62 +17,137 @@ type Data = {
     card?: Card | null;
     newId?: string;
     error?: string;
+    videoId?: string;
+    isVertical?: boolean;
+    matchCategory?: boolean;
 };
 
 type MetaData = {
+    likes: number;
+    publishedAt: string;
     keywords?: string[];
     category?: string;
     view_count?: number;
     is_family_safe?: boolean;
     channel_name?: string;
-    likes?: {
-        count?: number;
-    };
+    googleSpreadSheet?: string;
 };
 
-async function setDocument(
-    req: NextApiRequest,
-    res: NextApiResponse<Data>
-) {
-    const {body} = req;
-    
+async function setDocument(req: NextApiRequest, res: NextApiResponse<Data>) {
+    const { body } = req;
+
     console.log(body);
-    
+
     try {
-        const {videoUrl, loader} = body;
+        const { videoUrl, loader, googleSpreadSheet, categoryDefinedByStaff } = body;
         const youtubeId = getYouTubeID(videoUrl);
-        
+        console.log(youtubeId);
+
         if (!youtubeId) {
-            return res.status(207).json({ok: false, error: 'there is no youtube id'});
+            return res
+                .status(207)
+                .json({ ok: false, error: "there is no youtube id" });
         }
 
-        const youtube = await new Innertube({ gl: 'US' });
+        console.log({ step: 1 });
+        const YOUTUBE_KEY = "AIzaSyBo2yM91E4uUWmjqGht6XVyrSDfIrZ9QJk";
+        const response = await fetch(
+            "https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics,localizations,player,recordingDetails,status,topicDetails&id=" +
+                youtubeId +
+                "&key=" +
+                YOUTUBE_KEY
+        );
+        const json = await response.json();
+        console.log(json);
+        const {
+            snippet,
+            contentDetails,
+            statistics,
+            topicDetails,
+        } = json.items[0];
+        // console.log({
+        //     snippet,
+        //     thumbs: snippet.thumbnails,
+        //     contentDetails,
+        //     statistics,
 
-        const video = await youtube.getDetails(youtubeId);
+        //     localizations,
+        //     player,
+
+        //     recordingDetails,
+        //     status,
+
+        //     topicDetails,
+        // });
 
         const stableLikes = Math.floor(Math.random() * 10000);
-        const stableViews = Math.floor(Math.random() * 100000 + stableLikes * 2);
+        const stableViews = Math.floor(
+            Math.random() * 100000 + stableLikes * 2
+        );
         const updatedAt = new Date().toISOString();
-        const docRef = doc(collection(db, 'cards'));
+        const docRef = doc(collection(db, "cards"));
         const newId = docRef.id;
-        const metaData = video?.metadata as MetaData;
-        await setDoc(docRef, {
+        const metaData = {
             videoUrl,
-            account: metaData?.channel_name ?? '',
-            description: video.title + video.description ?? '',
-            isFamilySafe: metaData?.is_family_safe ?? true,
-            views: metaData?.view_count ?? stableViews,
-            category: metaData?.category ?? '',
-            keywords: metaData?.keywords ?? [],
-            loader: loader ?? 'unknown',
+            account: snippet.channelTitle ?? "",
+            description: snippet.title + snippet.description ?? "",
+            isFamilySafe: true,
+            views: statistics?.viewCount ?? stableViews,
+            commentCount: statistics?.commentCount ?? 0,
+            category: snippet?.categoryId ?? "",
+            topicCategories: topicDetails?.topicCategories || [],
+            keywords: [],
+            loader: loader ?? "unknown",
             _id: newId,
-            likes: metaData?.likes?.count ?? stableLikes,
+            likes: statistics?.likeCount ?? stableLikes,
             updatedAt: updatedAt,
             createdAt: body.createdAt || updatedAt,
-        });
+            publishedAt: snippet.publishedAt,
+            duration: contentDetails?.duration,
+            isInDurationLimits:
+                contentDetails?.duration &&
+                gt(contentDetails?.duration)("PT10S") &&
+                lt(contentDetails?.duration, "PT2M"),
+            googleSpreadSheet,
+            categoryDefinedByStaff,
+        } as MetaData;
 
-        return res.status(200).json({ok: true});
-    } catch(error: any) {
+        const getLikesPerDay = (
+            publishedAt: string,
+            likesCount: number = 1000
+        ) => {
+            var start = moment(publishedAt);
+            var end = moment();
+            let days = end.diff(start, "days");
+
+            if (!isNaN(days) && days) {
+                days = days < 1 ? 1 : days;
+                return likesCount / days;
+            }
+
+            return likesCount / 5;
+        };
+
+        const likesPerDate = getLikesPerDay(
+            metaData.publishedAt,
+            metaData.likes
+        );
+        const isVertical = videoUrl.includes("/shorts");
+
+        console.log({ likesPerDate });
+
+        // await setDoc(docRef, metaData);
+
+        return res
+            .status(200)
+            .json({
+                ok: true,
+                videoId: youtubeId,
+                isVertical,
+                matchCategory: false,
+            });
+    } catch (error: any) {
+        console.log(error);
         console.log('Error during adding doc');
 
         if (typeof error === 'string') {
@@ -87,7 +162,7 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<Data>
 ) {
-    return req.method === 'POST'
+    return req.method === "POST"
         ? setDocument(req, res)
-        : res.status(404).json({ok: false, card: null})
+        : res.status(404).json({ ok: false, card: null });
 }
