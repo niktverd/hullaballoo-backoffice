@@ -2,7 +2,7 @@ import { doc, collection, setDoc } from "firebase/firestore/lite";
 import getYouTubeID from "get-youtube-id";
 import moment from "moment";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { gt, gte, lt } from "pomeranian-durations";
+import { gt, lt } from "pomeranian-durations";
 import db from "../../firebase";
 
 type Card = {
@@ -20,6 +20,8 @@ type Data = {
     videoId?: string;
     isVertical?: boolean;
     matchCategory?: boolean;
+    matchDuration?: boolean;
+    durationValue?: string;
 };
 
 type MetaData = {
@@ -31,6 +33,8 @@ type MetaData = {
     is_family_safe?: boolean;
     channel_name?: string;
     googleSpreadSheet?: string;
+    isInDurationLimits?: boolean;
+    duration?: string;
 };
 
 async function setDocument(req: NextApiRequest, res: NextApiResponse<Data>) {
@@ -145,6 +149,8 @@ async function setDocument(req: NextApiRequest, res: NextApiResponse<Data>) {
                 videoId: youtubeId,
                 isVertical,
                 matchCategory: false,
+                matchDuration: metaData.isInDurationLimits,
+                durationValue: metaData.duration,
             });
     } catch (error: any) {
         console.log(error);
