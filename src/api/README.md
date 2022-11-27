@@ -1,0 +1,1 @@
+Function that help to work with firebase

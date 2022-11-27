@@ -4,6 +4,14 @@ import moment from "moment";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { gt, lt } from "pomeranian-durations";
 import db from "../../firebase";
+import {
+    getBatchesBySubcategoryNamesAndPopularity,
+    updateBatchesWithVideo,
+} from "../../src/api/firebase-helpers/batches";
+import { checkIfVideoInDataBase } from "../../src/api/firebase-helpers/cards";
+import { getSubcategoriesByNames } from "../../src/api/firebase-helpers/subcategories";
+import { Populiarity } from "../../src/types/common";
+import { getRidOfDups } from "../../src/utils/common";
 
 type Card = {
     videoUrl: string;
@@ -22,20 +30,31 @@ type Data = {
     matchCategory?: boolean;
     matchDuration?: boolean;
     durationValue?: string;
+    alreadyAdded?: boolean;
 };
 
 type MetaData = {
+    _id: string;
     likes: number;
     publishedAt: string;
+    dataBaseCategories: string[];
+    dataBaseSubcategories: string[];
+    dataBaseBatches: string[];
     keywords?: string[];
     category?: string;
     view_count?: number;
     is_family_safe?: boolean;
     channel_name?: string;
     googleSpreadSheet?: string;
+    topicCategories: string[];
     isInDurationLimits?: boolean;
     duration?: string;
+    youtubeId?: string;
 };
+
+// const googleScriptUrl = 'https://script.google.com/macros/s/AKfycbx_Ra1l3MCRi40m_wPIq5dmdcHBjzmSnjbS0IlgjYQ/dev';
+const googleScriptUrl = 'https://script.google.com/macros/s/AKfycbxxcl5Cn9qwc54txdsDQkxAIay4o_fy8cR9sTh1H4NEYsw2oIUv-PDJB8mzxZIFXJiL/exec';
+const mySheet = 'https://docs.google.com/spreadsheets/d/1PnrIFWxfZSW_EHFed1PlzC0ql2ftW4-fSTyHAwDHohQ/edit#gid=0'
 
 async function setDocument(req: NextApiRequest, res: NextApiResponse<Data>) {
     const { body } = req;
@@ -43,7 +62,12 @@ async function setDocument(req: NextApiRequest, res: NextApiResponse<Data>) {
     console.log(body);
 
     try {
-        const { videoUrl, loader, googleSpreadSheet, categoryDefinedByStaff } = body;
+        const {
+            videoUrl,
+            loader,
+            googleSpreadSheet,
+            categoryDefinedByStaff = [],
+        } = body;
         const youtubeId = getYouTubeID(videoUrl);
         console.log(youtubeId);
 
@@ -51,6 +75,22 @@ async function setDocument(req: NextApiRequest, res: NextApiResponse<Data>) {
             return res
                 .status(207)
                 .json({ ok: false, error: "there is no youtube id" });
+        }
+
+        const existsInDatabase = await checkIfVideoInDataBase(youtubeId);
+
+        if (existsInDatabase) {
+            fetch(`${googleScriptUrl}?videoId=${'none'}&youtubeId=${youtubeId}&status=${'video already in database'}&sheetUrl=${googleSpreadSheet}`);
+            fetch(`${googleScriptUrl}?videoId=${'none'}&youtubeId=${youtubeId}&status=${'video already in database'}&sheetUrl=${mySheet}`);
+            return res.status(207).json({
+                ok: true,
+                videoId: youtubeId,
+                alreadyAdded: true,
+                isVertical: false,
+                matchCategory: false,
+                matchDuration: false,
+                durationValue: 'metaData.duration',
+            });
         }
 
         console.log({ step: 1 });
@@ -62,27 +102,13 @@ async function setDocument(req: NextApiRequest, res: NextApiResponse<Data>) {
                 YOUTUBE_KEY
         );
         const json = await response.json();
-        console.log(json);
+        // console.log(json);
         const {
             snippet,
             contentDetails,
             statistics,
             topicDetails,
         } = json.items[0];
-        // console.log({
-        //     snippet,
-        //     thumbs: snippet.thumbnails,
-        //     contentDetails,
-        //     statistics,
-
-        //     localizations,
-        //     player,
-
-        //     recordingDetails,
-        //     status,
-
-        //     topicDetails,
-        // });
 
         const stableLikes = Math.floor(Math.random() * 10000);
         const stableViews = Math.floor(
@@ -92,7 +118,9 @@ async function setDocument(req: NextApiRequest, res: NextApiResponse<Data>) {
         const docRef = doc(collection(db, "cards"));
         const newId = docRef.id;
         const metaData = {
+            _id: newId,
             videoUrl,
+            youtubeId,
             account: snippet.channelTitle ?? "",
             description: snippet.title + snippet.description ?? "",
             isFamilySafe: true,
@@ -102,7 +130,6 @@ async function setDocument(req: NextApiRequest, res: NextApiResponse<Data>) {
             topicCategories: topicDetails?.topicCategories || [],
             keywords: [],
             loader: loader ?? "unknown",
-            _id: newId,
             likes: statistics?.likeCount ?? stableLikes,
             updatedAt: updatedAt,
             createdAt: body.createdAt || updatedAt,
@@ -114,6 +141,10 @@ async function setDocument(req: NextApiRequest, res: NextApiResponse<Data>) {
                 lt(contentDetails?.duration, "PT2M"),
             googleSpreadSheet,
             categoryDefinedByStaff,
+            dataBaseCategories: [],
+            dataBaseSubcategories: [],
+            dataBaseBatches: [],
+            needToProveCategory: true,
         } as MetaData;
 
         const getLikesPerDay = (
@@ -142,25 +173,71 @@ async function setDocument(req: NextApiRequest, res: NextApiResponse<Data>) {
 
         // await setDoc(docRef, metaData);
 
-        return res
-            .status(200)
-            .json({
-                ok: true,
-                videoId: youtubeId,
-                isVertical,
-                matchCategory: false,
-                matchDuration: metaData.isInDurationLimits,
-                durationValue: metaData.duration,
-            });
-    } catch (error: any) {
-        console.log(error);
-        console.log('Error during adding doc');
+        // get category by sub category
+        const subcategories = await getSubcategoriesByNames([
+            ...categoryDefinedByStaff,
+            ...metaData.topicCategories,
+        ]);
+        const popularityList = Populiarity.sort((a, b) => a - b);
 
-        if (typeof error === 'string') {
-            return res.status(204).json({ok: false, error});
+        const popularity = popularityList.find((p) => p >= likesPerDate) || 50;
+
+        // console.log({ popularityList, popularity, likesPerDate });
+
+        const categories = getRidOfDups(subcategories.map((sc) => sc.category));
+        const batches = await getBatchesBySubcategoryNamesAndPopularity(
+            subcategories.map((sc) => sc.name),
+            popularity
+        );
+        // add info to video
+
+        if (categories?.length) {
+            metaData.dataBaseCategories = categories;
         }
 
-        return res.status(204).json({ok: false});
+        const subcategoriesArray = getRidOfDups(
+            subcategories.map((sc) => sc.name)
+        );
+
+        if (subcategoriesArray?.length) {
+            metaData.dataBaseSubcategories = subcategoriesArray;
+        }
+
+        const batchesArray = getRidOfDups(batches.map((sc) => sc._id));
+
+        if (batches) {
+            metaData.dataBaseBatches = batchesArray;
+        }
+
+        // console.log(metaData, { categories });
+
+        // save video
+        await setDoc(docRef, metaData);
+        // update batch
+        await updateBatchesWithVideo({ batchesArray, videoId: metaData._id });
+        // update google tables
+        fetch(`${googleScriptUrl}?videoId=${newId}&youtubeId=${youtubeId}&status=${'check category match'}&sheetUrl=${metaData.googleSpreadSheet}`);
+        fetch(`${googleScriptUrl}?videoId=${newId}&youtubeId=${youtubeId}&status=${'check category match'}&sheetUrl=${mySheet}`);
+        // update tracker
+
+        return res.status(200).json({
+            ok: true,
+            videoId: youtubeId,
+            alreadyAdded: false,
+            isVertical,
+            matchCategory: false,
+            matchDuration: metaData.isInDurationLimits,
+            durationValue: metaData.duration,
+        });
+    } catch (error: any) {
+        console.log(error);
+        console.log("Error during adding doc");
+
+        if (typeof error === "string") {
+            return res.status(204).json({ ok: false, error });
+        }
+
+        return res.status(204).json({ ok: false });
     }
 }
 

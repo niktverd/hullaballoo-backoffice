@@ -23,3 +23,12 @@ export type Offer = {
 export type Thread = {
     _id: string;
 } & Base;
+
+export const Populiarity = [
+    0,
+    50,
+    500,
+    5000,
+    50000,
+    99999999999,
+];
