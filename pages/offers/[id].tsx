@@ -21,6 +21,7 @@ const EditOffer: NextPage = () => {
 
         values.banners = values.banners?.map((banner: any) => banner.imgSrc);
         values.threads = values.threads?.map((thread: any) => thread.thread);
+        values.geos = values.geos?.map((geoCode: any) => geoCode.geo);
 
         try {
             const offerResp = await fetch('/api/offer', {
@@ -53,7 +54,8 @@ const EditOffer: NextPage = () => {
                         ...offerJson.offer,
                         banners: offerJson.offer?.banners?.map((bannerId: string) => ({imgSrc: bannerId})),
                         threads: offerJson.offer?.threads?.map((threadId: string) => ({thread: threadId})),
-                    });
+                        geos: offerJson.offer?.geos?.map((geoCode: string) => ({geo: geoCode}))
+                    })
                 }
             } catch (error) {
                 console.log(error);
@@ -63,7 +65,7 @@ const EditOffer: NextPage = () => {
             getOffer();
         }
     }, [router]);
-
+    console.log(offer);
     return (
         <div className={styles.container}>
             {offer && <OfferForm onSubmit={onSubmit} content={offer} docId={router.query.id as string} />}

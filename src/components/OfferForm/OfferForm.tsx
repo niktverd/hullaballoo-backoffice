@@ -32,8 +32,23 @@ const CardForm: React.FC<FormProps> = ({onSubmit, content, docId}) => {
                     </div>
 
                     <div className={styles.row}>
+                        <label className={styles.label}>Short title</label>
+                        <Field className={styles.field} name="title" component="input" />
+                    </div>
+
+                    <div className={styles.row}>
+                        <label className={styles.label}>Description</label>
+                        <Field className={styles.field} name="description" component="input" />
+                    </div>
+
+                    <div className={styles.row}>
                         <label className={styles.label}>Button Link</label>
                         <Field className={styles.field} name="buttonLink" component="input" />
+                    </div>
+
+                    <div className={styles.row}>
+                        <label className={styles.label}>Button Caption</label>
+                        <Field className={styles.field} name="buttonCaption" component="input" />
                     </div>
 
                     <div className={styles.row}>
@@ -82,6 +97,33 @@ const CardForm: React.FC<FormProps> = ({onSubmit, content, docId}) => {
                                     <button
                                         type="button"
                                         onClick={() => fields.push({thread: ''})}
+                                    >
+                                        Add
+                                    </button>
+                                </div>
+                            )}
+                        </FieldArray>
+                    </div>
+
+                    <div className={styles.row}>
+                        <label className={styles.label}>Geos</label>
+                        <FieldArray name="geos">
+                            {({ fields }) => (
+                                <div>
+                                    {fields.map((name, index) => (
+                                        <div key={name}>
+                                        <div>
+                                            <label>Geo Code</label>
+                                            <Field name={`${name}.geo`} component="input" />
+                                        </div>
+                                        <button type="button" onClick={() => fields.remove(index)}>
+                                            Remove
+                                        </button>
+                                        </div>
+                                    ))}
+                                    <button
+                                        type="button"
+                                        onClick={() => fields.push({geo: ''})}
                                     >
                                         Add
                                     </button>

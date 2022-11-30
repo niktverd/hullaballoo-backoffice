@@ -82,6 +82,8 @@ async function setDocument(req: NextApiRequest, res: NextApiResponse<Data>) {
         if (existsInDatabase) {
             fetch(`${googleScriptUrl}?videoId=${'none'}&youtubeId=${youtubeId}&status=${'video already in database'}&sheetUrl=${googleSpreadSheet}`);
             fetch(`${googleScriptUrl}?videoId=${'none'}&youtubeId=${youtubeId}&status=${'video already in database'}&sheetUrl=${mySheet}`);
+
+            // return since and loader
             return res.status(207).json({
                 ok: true,
                 videoId: youtubeId,
