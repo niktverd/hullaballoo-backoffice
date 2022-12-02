@@ -147,6 +147,8 @@ async function setDocument(req: NextApiRequest, res: NextApiResponse<Data>) {
             dataBaseSubcategories: [],
             dataBaseBatches: [],
             needToProveCategory: true,
+            lastValidation: 0,
+            isBroken: false,
         } as MetaData;
 
         const getLikesPerDay = (

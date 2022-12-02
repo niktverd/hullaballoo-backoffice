@@ -6,7 +6,9 @@
     "dev": "next dev -p 3030",
     "build": "next build",
     "start": "next start -p $PORT",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migration:add": "tsc ./src/scripts/add-migration.ts && node ./src/scripts/js/add-migration.js",
+    "migration:prep": "tsc ./src/migrations/*.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",
