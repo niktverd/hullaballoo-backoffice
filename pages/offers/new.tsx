@@ -11,6 +11,7 @@ const CreateOffer: NextPage = () => {
     async function onSubmit(values: any) {
         values.banners = values.banners?.map((banner: any) => banner.imgSrc);
         values.threads = values.threads?.map((thread: any) => thread.thread);
+        values.geos = values.geos?.map((geoCode: any) => geoCode.geo);
 
         try {
             const offerResp = await fetch('/api/offer', {

@@ -1,10 +1,11 @@
-import type {NextPage} from 'next'
-import { useRouter } from 'next/router';
-import {useEffect, useState} from 'react';
+import type { NextPage } from "next";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
-import OfferForm from '../../src/components/OfferForm/OfferForm';
+import OfferForm from "../../src/components/OfferForm/OfferForm";
+import Page from '../../src/containers/Page/Page';
 
-import styles from '../../styles/Content.module.css';
+import styles from "../../styles/Content.module.css";
 
 // import _offers from '../src/temp-data/videos.json'
 
@@ -24,15 +25,15 @@ const EditOffer: NextPage = () => {
         values.geos = values.geos?.map((geoCode: any) => geoCode.geo);
 
         try {
-            const offerResp = await fetch('/api/offer', {
-                method: 'PATCH',
+            const offerResp = await fetch("/api/offer", {
+                method: "PATCH",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     ...values,
                     id: docId,
-                })
+                }),
             });
             const offerJson = await offerResp.json();
 
@@ -47,15 +48,23 @@ const EditOffer: NextPage = () => {
     useEffect(() => {
         async function getOffer() {
             try {
-                const offerResp = await fetch('/api/offer?id='+router.query.id);
+                const offerResp = await fetch(
+                    "/api/offer?id=" + router.query.id
+                );
                 const offerJson = await offerResp.json();
                 if (offerJson.offer) {
                     setOffer({
                         ...offerJson.offer,
-                        banners: offerJson.offer?.banners?.map((bannerId: string) => ({imgSrc: bannerId})),
-                        threads: offerJson.offer?.threads?.map((threadId: string) => ({thread: threadId})),
-                        geos: offerJson.offer?.geos?.map((geoCode: string) => ({geo: geoCode}))
-                    })
+                        banners: offerJson.offer?.banners?.map(
+                            (bannerId: string) => ({ imgSrc: bannerId })
+                        ),
+                        threads: offerJson.offer?.threads?.map(
+                            (threadId: string) => ({ thread: threadId })
+                        ),
+                        geos: offerJson.offer?.geos?.map((geoCode: string) => ({
+                            geo: geoCode,
+                        })),
+                    });
                 }
             } catch (error) {
                 console.log(error);
@@ -67,10 +76,18 @@ const EditOffer: NextPage = () => {
     }, [router]);
     console.log(offer);
     return (
-        <div className={styles.container}>
-            {offer && <OfferForm onSubmit={onSubmit} content={offer} docId={router.query.id as string} />}
-        </div>
+        <Page title="Create a new offer">
+            <div className={styles.container}>
+                {offer && (
+                    <OfferForm
+                        onSubmit={onSubmit}
+                        content={offer}
+                        docId={router.query.id as string}
+                    />
+                )}
+            </div>
+        </Page>
     );
-}
+};
 
 export default EditOffer;
