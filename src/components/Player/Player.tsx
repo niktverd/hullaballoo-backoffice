@@ -14,7 +14,7 @@ const Player: React.FC<PlayerProps> = ({
     paused,
 }) => {
     const [showChild, setShowChild] = useState(false);
-    const [playing, setPlaying] = useState(false);
+    const [playing, setPlaying] = useState(true);
 
     useEffect(() => {
         setShowChild(true);
@@ -23,6 +23,8 @@ const Player: React.FC<PlayerProps> = ({
     if (!showChild) {
         return null;
     }
+
+    console.log(playing);
 
     return (
         <div
@@ -36,6 +38,7 @@ const Player: React.FC<PlayerProps> = ({
                 controls={false}
                 playing={playing}
                 loop
+                muted
                 config={{
                     youtube: {
                         playerVars: {
@@ -45,7 +48,7 @@ const Player: React.FC<PlayerProps> = ({
                             showinfo: 0,
                             origin: window.location.origin,
                             enablejsapi: 1,
-                            // autoplay: true,
+                            autoplay: true,
                             // start: 50
                         },
                     },
