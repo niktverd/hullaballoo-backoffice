@@ -3,6 +3,7 @@ import { shuffle } from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import Player from '../../src/components/Player/Player';
 import getYouTubeID from "get-youtube-id";
+import Fire from '../../src/components/Fire/Fire';
 
 import styles from '../../styles/AdsList.module.css'
 
@@ -27,7 +28,7 @@ const scrollRandom = (colIndx: number, videoIndx: number) => {
     window.location.hash = videoId;
 }
 
-const videos = [
+const videosOld = [
     "https://www.youtube.com/shorts/oGde1cKV4vg",
     "https://www.youtube.com/shorts/pd6MctG9ZdM",
     "https://www.youtube.com/shorts/kc26DV5_xKI",
@@ -411,7 +412,95 @@ const videos = [
     "https://www.youtube.com/shorts/lVJxnhqnr18"
 ];
 
-const content: string[][] = [];
+const videos = [
+    {src: 'https://www.youtube.com/shorts/RgktAPE-l0M', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/34mKWbbH-P4', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/4L6YKY_WgqA', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/umXUuwzCW3A', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/XbcxBJ422jA', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/7e4LmDKvwDU', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/iweqU3y2wYE', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/1O5MGnrwJRA', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/bVqaR337Xp4', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/ZREWkrOz9oY', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/OMkSavWGsW8', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/lzO5OwNAmD4', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/_NzD7DhERdI', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/y2Ygrb18S4I', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/5qaSvvu3imQ', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/9dnb8uLYc1s', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/fzwJTQAnQqM', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/lwnqWUOE0ls', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/mKs_2cSaGRs', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/Eba9FVPzLHc', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/WreEhMLRKaE', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/KgQMEx9hS0k', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/UeKxNL2itDI', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/lOZrKcqrsZc', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/ER4b4VH0ezE', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/HARfxTJenGg', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/8BivI2VpcRs', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/2_acrwnx0T8', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/0pawpElJdRo', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/fgXHdnaFG_o', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/Z9tA6zTqffs', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/C5fX2BMrFEw', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/iAPQL_2bt0w', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/QLIrAzLjEjQ', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/lMpMfVnVbmg', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/0kY4fQJHNDw', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/NyppZX4JfT0', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/6B8B9W9GK-U', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/wP2KOJHKNvw', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/n_5oYpj2pVk', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/F_y51nz7oHE', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/NQMMkEyqhAg', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/7YQ71zCZQWU', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/SPlRxra1v6M', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/7gmI9BWiV10', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/NYGJnTAGrcc', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/uQvs-MXyPoY', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/Miqlm1vcLj0', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/Hk3oL9AtiZ4', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/Oj7YwWsyUWs', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/bF0iLT571Ks', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/frwWt1rY7SU', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/XV4DUfzVMJ8', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/Bgjhr1SI1RE', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/TshOFLwFFbs', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/dXX8YeDlQRY', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/2WGhPcbiYd4', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/njyeR2KoS7c', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/yeQeVQ7GnCs', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/_whzW5HebAM', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/6ytsVyS8WY4', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/mD4f__pqJ9U', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/mrOgsQ3rd6w', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/3X_Oe3csz8M', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/Nzv-iGWY6XI', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/3snLzOhVDwo', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/ywTzn33-40k', type: 'normal'},
+    {src: 'https://www.youtube.com/shorts/dbNh87nHq5s', type: 'normal'},
+
+    {src: 'https://www.youtube.com/shorts/Yiaw6nlRLWU', type: 'hot'},
+    {src: 'https://www.youtube.com/shorts/l_0Rtie5ibw', type: 'hot'},
+    {src: 'https://www.youtube.com/shorts/iBu_gcp6jN8', type: 'hot'},
+    {src: 'https://www.youtube.com/shorts/yExz98gSIB8', type: 'hot'},
+    {src: 'https://www.youtube.com/shorts/iTspOI_QOnc', type: 'hot'},
+    {src: 'https://www.youtube.com/shorts/xgcY8UTaHmo', type: 'hot'},
+    {src: 'https://www.youtube.com/shorts/RIiI6T9MzsU', type: 'hot'},
+    {src: 'https://www.youtube.com/shorts/tEsjY-CdDRE', type: 'hot'},
+    {src: 'https://www.youtube.com/shorts/YXPavZSWrKU', type: 'hot'},
+    {src: 'https://www.youtube.com/shorts/nPsoHIj2FhI', type: 'hot'},
+    {src: 'https://www.youtube.com/shorts/nIgT6fFSOvY', type: 'hot'},
+    {src: 'https://www.youtube.com/shorts/Z14gyfv3nf0', type: 'hot'},
+    {src: 'https://www.youtube.com/shorts/pQx1tSkz5NE', type: 'hot'},
+    {src: 'https://www.youtube.com/shorts/l6TxBNLIxqs', type: 'hot'},
+    {src: 'https://www.youtube.com/shorts/24LtcBzoIPE', type: 'hot'},
+    // {src: 'https://www.youtube.com/shorts/yhlp_UNmRsI', type: 'hot'},
+];
+
+const content: {src: string; type: string}[][] = [];
 
 for (let i = 0; i < COLUMNS; i++) {
     content.push(JSON.parse(JSON.stringify(shuffle(videos).slice(0, 100))));
@@ -427,6 +516,8 @@ const videoStyles = {
         display: 'flex',
         alignItems: 'center',
         zIndex: 5,
+        justifyContent: 'center',
+        position: 'relative',
     },
     hoverred: {
         backgroundColor: 'green',
@@ -441,7 +532,7 @@ const Ads: NextPage = () => {
     const [hover, setHover] = useState([-1, -1]);
     const [selected, setSelected] = useState([-1, -1]);
     const [showChild, setShowChild] = useState(false);
-    const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+    const [selectedVideo, setSelectedVideo] = useState<{src: string; type: string;} | null>(null);
 
     useEffect(() => {
         setShowChild(true);
@@ -453,9 +544,9 @@ const Ads: NextPage = () => {
                 rndmCol = Math.floor(Math.random() * COLUMNS);
             }
 
-            const rndmRow = Math.floor(Math.random() * videos.length * 0.6);
+            const rndmRow = Math.floor(Math.random() * videos.length * 0.4);
             scrollRandom(rndmCol, rndmRow);
-        }, 3000);
+        }, 2000);
 
         return () => clearInterval(id);
     }, [selected[0]]);
@@ -477,6 +568,7 @@ const Ads: NextPage = () => {
                     return <div
                         key={columnIndex}
                         id={createId(columnIndex)}
+                        className={styles.column}
                         style={{
                             display: 'flex',
                             flexDirection: 'column',
@@ -531,9 +623,11 @@ const Ads: NextPage = () => {
                                             objectFit: 'cover',
                                             alignItems: 'center'
                                         }}
-                                        src={getYoutubeCover(video)}
-                                    />
+                                        src={getYoutubeCover(video.src)}
+                                    />                                    
+                                    {video.type === 'hot' && <Fire content={'Hot!'} parentWidth={100}/>}
                                 </div>
+
                             </div>
                         )}
                     </div>
@@ -553,9 +647,11 @@ const Ads: NextPage = () => {
                     display: 'flex',
                     border: '4px solid white',
                     borderRadius: '16px',
+                    zIndex: 1000,
                 }}
             >
-                <Player videoUrl={selectedVideo} paused={false} />
+                <Player videoUrl={selectedVideo.src} paused={false} />
+                {selectedVideo.type === 'hot' && <Fire content={'Hot!'} position={{top: -10, bottom: -10, left: -30, right: -30}}  />}
             </div>}
         </div>
     );
